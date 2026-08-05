@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAS — Login</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .panel { background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,0.1); width: 100%; max-width: 420px; overflow: hidden; }
+    .panel-heading { background: #2563eb; color: #fff; padding: 16px 24px; }
+    .panel-heading h1 { font-size: 1.25rem; font-weight: 600; }
+    .panel-body { padding: 24px; }
+    .panel-body p { margin-bottom: 16px; color: #4b5563; font-size: 0.875rem; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; margin-bottom: 4px; font-weight: 500; font-size: 0.875rem; color: #374151; }
+    .form-group input { width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; font-size: 1rem; transition: border-color 0.2s; }
+    .form-group input:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+    .button-group { display: flex; gap: 8px; margin-top: 20px; }
+    .btn { padding: 8px 20px; border: none; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+    .btn-primary { background: #2563eb; color: #fff; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-default { background: #e5e7eb; color: #374151; }
+    .btn-default:hover { background: #d1d5db; }
+    .error { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 8px 12px; font-size: 0.875rem; margin-bottom: 16px; display: none; }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <div class="panel-heading">
+      <h1>CAS — Central Authentication Service</h1>
+    </div>
+    <div class="panel-body">
+      <p>Enter your username and password.</p>
+      <div class="error" id="error"></div>
+      <form id="login-form" method="post" action="{{ login_url }}">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required autofocus>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+        <div class="button-group">
+          <button type="submit" class="btn btn-primary">Login</button>
+          <button type="reset" class="btn btn-default">Clear</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script>
+    const form = document.getElementById('login-form');
+    const error = document.getElementById('error');
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const resp = await fetch(form.action, { method: 'POST', body: formData, redirect: 'manual' });
+      if (resp.status === 401) {
+        error.textContent = 'Invalid username or password.';
+        error.style.display = 'block';
+        return;
+      }
+      if (resp.type === 'opaqueredirect') {
+        window.location.href = resp.headers.get('Location') || resp.url;
+        return;
+      }
+      window.location.href = window.location.href;
+    });
+  </script>
+</body>
+</html>

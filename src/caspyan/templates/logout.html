@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAS — Logout</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .panel { background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,0.1); width: 100%; max-width: 420px; overflow: hidden; }
+    .panel-heading { background: #059669; color: #fff; padding: 16px 24px; }
+    .panel-heading h1 { font-size: 1.25rem; font-weight: 600; }
+    .panel-body { padding: 24px; }
+    .panel-body p { margin-bottom: 16px; color: #4b5563; font-size: 0.875rem; }
+    .btn { display: inline-block; padding: 8px 20px; border: none; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background 0.2s; text-decoration: none; }
+    .btn-primary { background: #059669; color: #fff; }
+    .btn-primary:hover { background: #047857; }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <div class="panel-heading">
+      <h1>CAS — Logout Successful</h1>
+    </div>
+    <div class="panel-body">
+      <p>You have been logged out of the Central Authentication Service.</p>
+      <form method="post" action="/cas/logout">
+        <button type="submit" class="btn btn-primary">Logout</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
