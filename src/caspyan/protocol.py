@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from urllib.parse import parse_qs, urlsplit
 
 from starlette.requests import Request
 from starlette.responses import Response
@@ -134,8 +135,15 @@ async def login_get(request: Request) -> Response:
         if not service:
             return Response("service parameter is required", status_code=400)
         username = session.get_authenticated_username(request.session)
+
+        parsed = urlsplit(service)
+        if "ticket" in parse_qs(parsed.query):
+            return RedirectResponse(service, status_code=302)
+
         ticket = ticket_service.issue(username)
-        return RedirectResponse(f"{service}?ticket={ticket}", status_code=302)
+        # Join with "&" when the service already has a query string, else "?".
+        sep = "&" if parsed.query else "?"
+        return RedirectResponse(f"{service}{sep}ticket={ticket}", status_code=302)
 
     login_url = str(request.url)
     return templates.TemplateResponse(request, "login.html", {"login_url": login_url})
@@ -175,20 +183,36 @@ async def login_post(request: Request) -> Response:
     return RedirectResponse(redirect_url, status_code=302)
 
 
+def _return_url(request: Request) -> str | None:
+    """Return the URL to redirect to after logout, if the client provided one."""
+    for key in ("service", "url", "next"):
+        url = request.query_params.get(key)
+        if url:
+            return url
+    return None
+
+
 async def logout_get(request: Request) -> Response:
-    """GET /cas/logout — show logout page."""
+    """GET /cas/logout — clear the session, then redirect to the return URL if given."""
+    from starlette.responses import RedirectResponse
     from starlette.templating import Jinja2Templates
+
+    return_url = _return_url(request)
+    if return_url:
+        session.clear_authentication(request.session)
+        return RedirectResponse(return_url, status_code=302)
 
     templates: Jinja2Templates = request.app.state.templates
     return templates.TemplateResponse(request, "logout.html", {})
 
 
 async def logout_post(request: Request) -> Response:
-    """POST /cas/logout — perform logout."""
+    """POST /cas/logout — clear session and redirect if a return URL is given."""
     from starlette.responses import RedirectResponse
 
     session.clear_authentication(request.session)
-    return RedirectResponse("/cas/logout", status_code=302)
+    return_url = _return_url(request)
+    return RedirectResponse(return_url or "/cas/logout", status_code=302)
 
 
 async def p3_service_validate(request: Request) -> Response:
