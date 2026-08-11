@@ -1,6 +1,6 @@
 # caspyan
 
-A lightweight **CAS mock server** for test scenarios.
+A lightweight CAS mock server for test scenarios.
 
 ## Quick start
 
@@ -17,14 +17,7 @@ http://localhost:8080/cas/login?service=http://your-app.example.com
 
 ## Details
 
-The mock server accepts any credentials where **username equals password**. For obvious reasons, this disqualifies it from use outside development testing.
-
-| Username  | Password | Result  |
-| --------- | -------- | ------- |
-| `john`    | `john`   | Success |
-| `john`    | `wrong`  | 401     |
-| `john`    | `fail`   | 401     |
-| _(empty)_ | anything | 401     |
+The mock server accepts any credentials where username equals password. For obvious reasons, this disqualifies it from use outside development testing.
 
 Environment variables:
 
